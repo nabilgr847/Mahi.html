@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Zchoice | Full E‑commerce + Zone Delivery (Admin Controlled)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* ========== COMPLETE STYLES (fully responsive) ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: #000; color: #fff; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #ff0000; border-radius: 10px; }
+
+        .header { position: fixed; top: 0; left: 0; width: 100%; background: #0a0a0a; backdrop-filter: blur(12px); padding: 0.8rem 5%; display: flex; justify-content: space-between; align-items: center; z-index: 1100; border-bottom: 1px solid #ff0000; }
+        .hamburger-icon { background: none; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; }
+        .logo-centered { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #fff, #ff0000); background-clip: text; -webkit-background-clip: text; color: transparent; cursor: pointer; }
+        .right-icons { display: flex; gap: 1rem; align-items: center; }
+        .icon-btn { background: none; border: none; color: white; font-size: 1.3rem; cursor: pointer; }
+        .icon-btn:hover { color: #ff0000; }
+        .cart-count { position: absolute; top: -8px; right: -12px; background: #ff0000; color: #000; font-weight: bold; border-radius: 30px; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
+        .cart-icon-wrapper { position: relative; }
+        .search-overlay { position: fixed; top: 80px; left: 0; width: 100%; background: #0a0a0a; border-bottom: 1px solid #ff0000; padding: 0.8rem 5%; z-index: 1099; display: none; backdrop-filter: blur(12px); }
+        .search-overlay input { width: 100%; padding: 12px 20px; background: #1a1a1a; border: 1px solid #ff0000; border-radius: 40px; color: white; font-size: 1rem; outline: none; }
+        .main-container { margin-top: 90px; padding: 1.5rem 5% 80px 5%; }
+
+        .ad-banner { width: 100%; height: 320px; background: #0a0a0a; border: 1px solid #ff0000; border-radius: 32px; overflow: hidden; position: relative; margin-bottom: 2rem; }
+        .ad-banner-container { width: 100%; height: 100%; position: relative; }
+        .ad-banner-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0; transition: opacity 0.6s ease; }
+        .ad-banner-slide.active { opacity: 1; position: relative; }
+
+        .section-header { display: flex; justify-content: space-between; align-items: baseline; margin: 2rem 0 1rem 0; }
+        .section-header h2 { font-size: 1.5rem; font-weight: 600; }
+        .view-all { color: #ff0000; font-weight: 500; cursor: pointer; font-size: 0.9rem; }
+        .filter-bar { display: flex; flex-wrap: wrap; gap: 12px; margin: 1rem 0 1.5rem 0; justify-content: center; }
+        .filter-btn { background: #1a1a1a; border: 1px solid #ff0000; color: white; padding: 8px 16px; border-radius: 40px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .filter-btn:hover, .filter-btn.active { background: #ff0000; color: #000; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; }
+        .product-card { background: #111; border-radius: 20px; overflow: hidden; transition: 0.2s; border: 1px solid #333; cursor: pointer; position: relative; }
+        .product-card:hover { transform: translateY(-4px); border-color: #ff0000; box-shadow: 0 8px 20px rgba(255,0,0,0.2); }
+        .product-img { width: 100%; height: 200px; object-fit: cover; pointer-events: none; }
+        .product-info { padding: 0.8rem; text-align: center; }
+        .product-title { font-weight: 600; font-size: 0.9rem; }
+        .product-price { color: #ff0000; font-weight: bold; margin-top: 5px; font-size: 1rem; }
+        .wishlist-overlay { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; }
+        .wishlist-overlay i { color: white; font-size: 1rem; }
+        .wishlist-overlay i.fa-heart { color: #ff0000; }
+
+        /* Product Detail Page */
+        .product-detail-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 3000; overflow-y: auto; padding: 90px 5% 100px; display: none; }
+        .detail-card { max-width: 1000px; margin: 0 auto; background: #0a0a0a; border-radius: 28px; border: 1px solid #ff0000; overflow: hidden; }
+        .detail-flex { display: flex; flex-wrap: wrap; }
+        .detail-img-col { flex: 1; min-width: 260px; background: #111; padding: 1.5rem; text-align: center; }
+        .main-gallery-img { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 20px; margin-bottom: 1rem; }
+        .thumbnail-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+        .thumbnail { width: 60px; height: 60px; object-fit: cover; border-radius: 12px; border: 2px solid #333; cursor: pointer; transition: 0.2s; }
+        .thumbnail:hover, .thumbnail.active { border-color: #ff0000; transform: scale(1.05); }
+        .detail-info-col { flex: 1.5; padding: 1.5rem; }
+        .detail-name { font-size: 1.5rem; font-weight: 700; }
+        .detail-sku { font-size: 0.85rem; color: #aaa; margin-bottom: 0.5rem; }
+        .detail-price { font-size: 1.5rem; color: #ff0000; font-weight: bold; margin: 0.5rem 0; }
+        .size-group, .fabric-group { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
+        .size-btn, .fabric-btn { background: #222; padding: 8px 18px; border-radius: 40px; cursor: pointer; border: 1px solid #ff0000; font-size: 0.9rem; }
+        .size-btn.selected, .fabric-btn.selected { background: #ff0000; color: #000; }
+        .qty-row { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+        .qty-btn { background: #1a1a1a; border: 1px solid #ff0000; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; }
+        .qty-num { font-size: 1.2rem; min-width: 40px; text-align: center; }
+        .add-cart-detail { background: #ff0000; border: none; color: #000; padding: 12px 20px; border-radius: 40px; font-weight: bold; font-size: 1rem; cursor: pointer; width: 100%; margin-top: 10px; }
+        .wishlist-detail-btn { background: #1a1a1a; border: 1px solid #ff0000; color: white; padding: 12px 20px; border-radius: 40px; font-weight: bold; font-size: 1rem; cursor: pointer; width: 100%; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .spec-box { margin-top: 1.5rem; border-top: 1px solid #333; padding-top: 1rem; }
+        .spec-box h4 { color: #ff0000; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; font-size: 1rem; }
+        .reviews-area { margin-top: 1.5rem; text-align: center; padding: 1rem; border-top: 1px solid #333; color: #aaa; font-size: 0.9rem; }
+        .close-detail-btn { position: fixed; top: 20px; right: 20px; background: #ff0000; border: none; color: #000; font-size: 1.6rem; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; z-index: 3100; }
+
+        /* Cart Sidebar */
+        .cart-sidebar { position: fixed; top: 0; right: -100%; width: 320px; max-width: 85%; height: 100%; background: #0a0a0a; z-index: 1500; transition: right 0.3s; padding: 1.5rem; overflow-y: auto; border-left: 2px solid #ff0000; }
+        .cart-sidebar.open { right: 0; }
+        .cart-item { display: flex; gap: 12px; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #333; }
+        .cart-item-img { width: 55px; height: 55px; object-fit: cover; border-radius: 12px; }
+        .cart-item-details { flex: 1; font-size: 0.85rem; }
+        .cart-remove { background: none; border: none; color: #aaa; cursor: pointer; }
+        .cart-remove:hover { color: #ff0000; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0a0a0a; backdrop-filter: blur(12px); display: flex; justify-content: space-around; padding: 0.6rem 1rem; border-top: 1px solid #ff0000; z-index: 100; }
+        .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; color: #ccc; font-size: 1.1rem; cursor: pointer; font-weight: 500; }
+        .bottom-nav-item span { font-size: 0.65rem; }
+        .bottom-nav-item:hover, .bottom-nav-item.active { color: #ff0000; }
+
+        .sidebar-menu { position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background: #0a0a0a; backdrop-filter: blur(20px); z-index: 2100; transition: left 0.3s; padding: 2rem 1.5rem; border-right: 2px solid #ff0000; }
+        .sidebar-menu.open { left: 0; }
+        .sidebar-menu .close-btn { background: none; border: none; color: white; font-size: 1.6rem; float: right; cursor: pointer; }
+        .sidebar-menu ul { list-style: none; margin-top: 3rem; }
+        .sidebar-menu li { margin: 1.2rem 0; font-size: 1rem; cursor: pointer; display: flex; gap: 12px; align-items: center; color: #fff; }
+        .sidebar-menu li i { width: 24px; color: #ff0000; }
+
+        .back-button { background: #1a1a1a; border: 1px solid #ff0000; color: white; padding: 8px 18px; border-radius: 40px; cursor: pointer; display: inline-block; margin-bottom: 1rem; }
+        .checkout-form { background: #111; border-radius: 28px; padding: 1.5rem; text-align: left; }
+        .checkout-form input, .checkout-form textarea, .checkout-form select { width: 100%; padding: 10px; margin: 6px 0; background: #1a1a1a; border: 1px solid #ff0000; border-radius: 16px; color: white; outline: none; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: #111; max-width: 500px; width: 90%; border-radius: 28px; padding: 1.5rem; border-top: 4px solid #ff0000; text-align: center; max-height: 85vh; overflow-y: auto; }
+        .modal-header { font-size: 1.3rem; margin-bottom: 1rem; color: #ff0000; }
+        .modal-btn { background: #ff0000; border: none; color: #000; padding: 8px 20px; border-radius: 40px; font-weight: bold; margin-top: 12px; cursor: pointer; }
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #ff0000; color: #000; padding: 8px 20px; border-radius: 50px; z-index: 3000; animation: fadeUp 0.3s; font-weight: bold; font-size: 0.9rem; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+        .whatsapp-float { position: fixed; bottom: 80px; right: 16px; background-color: #25D366; color: white; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 200; cursor: pointer; transition: 0.2s; }
+        .whatsapp-float:hover { transform: scale(1.05); background-color: #128C7E; }
+
+        /* Admin Panel */
+        .admin-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 4000; backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; overflow-y: auto; }
+        .admin-container { background: #0a0a0a; border: 1px solid #ff0000; border-radius: 28px; width: 95%; max-width: 1200px; max-height: 90vh; overflow-y: auto; margin: 1rem auto; padding: 1rem; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+        .admin-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; border-bottom: 1px solid #ff0000; margin-bottom: 1.2rem; padding-bottom: 0.5rem; overflow-x: auto; }
+        .admin-tab { background: none; border: none; color: #aaa; padding: 0.4rem 1rem; cursor: pointer; font-weight: 500; white-space: nowrap; font-size: 0.9rem; }
+        .admin-tab.active { color: #ff0000; border-bottom: 2px solid #ff0000; }
+        .admin-panel { display: none; overflow-x: auto; }
+        .admin-panel.active { display: block; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; font-size: 0.85rem; }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #333; }
+        th { color: #ff0000; }
+        .admin-btn { background: #ff0000; border: none; color: #000; padding: 8px 18px; border-radius: 40px; cursor: pointer; font-weight: bold; margin-right: 8px; margin-top: 8px; font-size: 0.9rem; }
+        .admin-btn-secondary { background: #1a1a1a; border: 1px solid #ff0000; color: white; padding: 6px 14px; border-radius: 40px; cursor: pointer; margin: 4px; font-size: 0.8rem; }
+        .login-box { max-width: 350px; margin: 3rem auto; background: #0a0a0a; border: 1px solid #ff0000; border-radius: 28px; padding: 1.8rem; text-align: center; }
+        .img-preview { max-width: 80px; max-height: 70px; margin-top: 6px; border-radius: 12px; border: 1px solid #ff0000; object-fit: cover; }
+        .multi-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+        .price-input-group { margin-bottom: 10px; }
+        .price-input-group label { display: inline-block; width: 130px; font-size: 0.9rem; }
+        .image-sku-group { border: 1px solid #333; padding: 12px; margin-bottom: 16px; border-radius: 16px; background: #111; }
+        .image-sku-group img { max-width: 80px; max-height: 80px; border-radius: 12px; object-fit: cover; }
+        .size-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; align-items: center; }
+        .size-tag { background: #1a1a1a; border: 1px solid #ff0000; border-radius: 40px; padding: 4px 12px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px; }
+        .size-tag button { background: none; border: none; color: #ff0000; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+        .add-size-input { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
+        .add-size-input input { background: #1a1a1a; border: 1px solid #ff0000; border-radius: 40px; padding: 6px 12px; color: white; width: 110px; }
+        @media (max-width: 700px) {
+            .detail-flex { flex-direction: column; }
+            .thumbnail { width: 50px; height: 50px; }
+            .admin-tab { padding: 0.3rem 0.7rem; font-size: 0.8rem; }
+            .whatsapp-float { width: 45px; height: 45px; font-size: 1.5rem; bottom: 70px; }
+            table { font-size: 0.75rem; min-width: 400px; }
+            td, th { padding: 5px; }
+            .image-sku-group { flex-direction: column; align-items: stretch; }
+            .product-grid { gap: 0.8rem; }
+            .product-img { height: 180px; }
+            .main-gallery-img { max-height: 260px; }
+            .add-size-input input { width: 90px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <button class="hamburger-icon" id="hamburgerOpenBtn"><i class="fas fa-bars"></i></button>
+    <div class="logo-centered" id="logoHomeBtn">ZCHOICE</div>
+    <div class="right-icons">
+        <button class="icon-btn search-icon" id="searchIconBtn"><i class="fas fa-search"></i></button>
+        <div class="cart-icon-wrapper">
+            <button class="icon-btn" id="cartIconBtn"><i class="fas fa-shopping-cart"></i><span id="cartCount" class="cart-count">0</span></button>
+        </div>
+        <button class="icon-btn" id="wishlistBtn"><i class="far fa-heart"></i></button>
+        <button class="icon-btn" id="adminOpenBtn" style="color:#ff0000;"><i class="fas fa-user-cog"></i></button>
+    </div>
+</header>
+<div class="search-overlay" id="searchOverlay"><input type="text" id="searchInput" placeholder="Search products..."></div>
+<div id="hamburgerSidebar" class="sidebar-menu"><button class="close-btn" id="closeHamburger">&times;</button><ul>
+    <li data-section="trackorder"><i class="fas fa-truck"></i> Track Order</li>
+    <li data-section="contact"><i class="fas fa-headset"></i> Contact</li>
+    <li data-section="about"><i class="fas fa-info-circle"></i> About</li>
+    <li data-section="faq"><i class="fas fa-question-circle"></i> FAQ</li>
+    <li data-section="wishlist"><i class="fas fa-heart"></i> My Wishlist</li>
+</ul></div>
+<div class="main-container" id="mainContainer"></div>
+<div class="bottom-nav">
+    <button class="bottom-nav-item active" data-page="home"><i class="fas fa-home"></i><span>HOME</span></button>
+    <button class="bottom-nav-item" data-page="shop"><i class="fas fa-store"></i><span>SHOP</span></button>
+    <button class="bottom-nav-item" data-page="cart"><i class="fas fa-shopping-cart"></i><span>CART</span></button>
+</div>
+<div id="customModal" class="modal"><div class="modal-content"><div class="modal-header" id="modalTitle"></div><div id="modalBody"></div><button class="modal-btn" id="modalConfirmBtn">OK</button></div></div>
+<div id="cartSidebar" class="cart-sidebar"><h3>Your Cart</h3><div id="cartItemsList"></div><div style="margin-top:20px;"><strong>Total: ৳<span id="cartTotalPrice">0.00</span></strong></div><button id="checkoutCartBtn" class="modal-btn" style="width:100%;">Proceed to Checkout</button></div>
+<div id="adminOverlay" class="admin-overlay"><div class="admin-container" id="adminContainer"></div></div>
+<div id="productDetailPage" class="product-detail-page"><button class="close-detail-btn" id="closeDetailPageBtn">&times;</button><div id="detailContent" class="detail-card"></div></div>
+<div class="whatsapp-float" id="whatsappFloat"><i class="fab fa-whatsapp"></i></div>
+
+<script>
+    // ======================== STORAGE KEYS ========================
+    const STORAGE_PRODUCTS = 'zchoice_products';
+    const STORAGE_ORDERS = 'zchoice_orders';
+    const STORAGE_CART = 'zchoice_cart';
+    const STORAGE_WISHLIST = 'zchoice_wishlist';
+    const STORAGE_BANNERS = 'zchoice_banners';
+    const STORAGE_SETTINGS = 'zchoice_settings';
+    const STORAGE_ADMIN_LOGGED = 'zchoice_admin_logged';
+    const STORAGE_FABRICS = 'zchoice_fabrics';
+    const STORAGE_PAGES = 'zchoice_pages';
+    const STORAGE_EXTRA_CHARGES = 'zchoice_extra_charges';
+
+    // Default data
+    const defaultFabrics = [
+        { id: 1, name: "Jersey fabric" },
+        { id: 2, name: "Cotton fabric" },
+        { id: 3, name: "Drop shoulder" }
+    ];
+    const defaultPages = {
+        contact: "<h3>Contact Us</h3><p>Email: support@zchoice.com<br>Phone: +880123456789<br>Address: Dhaka, Bangladesh</p>",
+        about: "<h3>About Zchoice</h3><p>Zchoice is a premium anime streetwear brand.</p>",
+        faq: "<h3>FAQ</h3><p><strong>Shipping:</strong> 5-7 days<br><strong>Returns:</strong> 30 days</p>"
+    };
+    const defaultExtraCharges = [
+        { id: 1, name: "Service Fee", amount: 20 }
+    ];
+
+    let products = [], orders = [], cart = [], wishlist = [], banners = [], settings = {}, fabrics = [], pages = [], extraCharges = [];
+    let currentFilter = "all", searchQuery = "", currentPage = "home", adInterval = null;
+    let currentDetailProduct = null, selectedSize = null, selectedFabric = null, quantity = 1, selectedImageIndex = 0;
+
+    // Helper: resize image to base64
+    function resizeImageToBase64(file, maxWidth, maxHeight) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    let width = img.width, height = img.height;
+                    if (width > maxWidth) { height *= maxWidth / width; width = maxWidth; }
+                    if (height > maxHeight) { width *= maxHeight / height; height = maxHeight; }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width; canvas.height = height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.85));
+                };
+                img.onerror = reject;
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function loadAllData() {
+        products = JSON.parse(localStorage.getItem(STORAGE_PRODUCTS) || JSON.stringify([
+            { id: 1, name: "Gojo Limitless Tee", basePrice: 899, images: [{url:"https://placehold.co/400x500/111/ff0000?text=Gojo+1", sku:"GLT-001", sizes:["S","M","L"]},{url:"https://placehold.co/400x500/222/ff0000?text=Gojo+2", sku:"GLT-002", sizes:["M","L","XL"]}], tag: "best", brand: "AnimeStreet", material: "100% Cotton", boxContent: "1 T-Shirt", fabricPrices: {} },
+            { id: 2, name: "Itachi Uchiha Hoodie", basePrice: 1299, images: [{url:"https://placehold.co/400x500/111/ff0000?text=Itachi+1", sku:"IUH-001", sizes:["L","XL"]},{url:"https://placehold.co/400x500/222/ff0000?text=Itachi+2", sku:"IUH-002", sizes:["M","L"]}], tag: "limited", brand: "Akatsuki Wear", material: "80% Cotton", boxContent: "1 Hoodie", fabricPrices: {} }
+        ]));
+        orders = JSON.parse(localStorage.getItem(STORAGE_ORDERS) || "[]");
+        cart = JSON.parse(localStorage.getItem(STORAGE_CART) || "[]");
+        wishlist = JSON.parse(localStorage.getItem(STORAGE_WISHLIST) || "[]");
+        banners = JSON.parse(localStorage.getItem(STORAGE_BANNERS) || JSON.stringify([
+            { image: "https://placehold.co/1200x400/ff0000/white?text=ANIME+STREETWEAR" },
+            { image: "https://placehold.co/1200x400/0000ff/white?text=LIMITED+EDITION" }
+        ]));
+        settings = JSON.parse(localStorage.getItem(STORAGE_SETTINGS) || JSON.stringify({ 
+            siteTitle: "ZCHOICE", 
+            contactEmail: "support@zchoice.com", 
+            contactPhone: "+880123456789", 
+            adminPasswordHash: btoa('459747'), 
+            whatsappNumber: "880123456789",
+            deliveryInsideDhaka: 60,
+            deliveryOutsideDhaka: 120
+        }));
+        fabrics = JSON.parse(localStorage.getItem(STORAGE_FABRICS) || JSON.stringify(defaultFabrics));
+        pages = JSON.parse(localStorage.getItem(STORAGE_PAGES) || JSON.stringify(defaultPages));
+        extraCharges = JSON.parse(localStorage.getItem(STORAGE_EXTRA_CHARGES) || JSON.stringify(defaultExtraCharges));
+        products.forEach(p => { if (!p.fabricPrices) p.fabricPrices = {}; });
+        updateCartBadge();
+        document.querySelector('.logo-centered').innerText = settings.siteTitle;
+        updateWhatsAppLink();
+    }
+    function updateWhatsAppLink() {
+        const waNumber = (settings.whatsappNumber || "880123456789").replace(/[^0-9]/g, '');
+        const waBtn = document.getElementById('whatsappFloat');
+        if (waBtn) waBtn.onclick = () => window.open(`https://wa.me/${waNumber}`, '_blank');
+    }
+    function saveProducts() { localStorage.setItem(STORAGE_PRODUCTS, JSON.stringify(products)); }
+    function saveOrders() { localStorage.setItem(STORAGE_ORDERS, JSON.stringify(orders)); }
+    function saveCart() { localStorage.setItem(STORAGE_CART, JSON.stringify(cart)); updateCartBadge(); }
+    function saveWishlist() { localStorage.setItem(STORAGE_WISHLIST, JSON.stringify(wishlist)); }
+    function saveBanners() { localStorage.setItem(STORAGE_BANNERS, JSON.stringify(banners)); }
+    function saveSettings() { localStorage.setItem(STORAGE_SETTINGS, JSON.stringify(settings)); updateWhatsAppLink(); }
+    function saveFabrics() { localStorage.setItem(STORAGE_FABRICS, JSON.stringify(fabrics)); }
+    function savePages() { localStorage.setItem(STORAGE_PAGES, JSON.stringify(pages)); }
+    function saveExtraCharges() { localStorage.setItem(STORAGE_EXTRA_CHARGES, JSON.stringify(extraCharges)); }
+    function updateCartBadge() { document.getElementById('cartCount').innerText = cart.reduce((s,i)=>s+i.quantity,0); }
+    function showToast(msg) { let t=document.createElement('div'); t.className='toast'; t.innerText=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2500); }
+    function showModal(title, body, onConfirm) { const modal = document.getElementById('customModal'); document.getElementById('modalTitle').innerText = title; document.getElementById('modalBody').innerHTML = body; modal.style.display = 'flex'; document.getElementById('modalConfirmBtn').onclick = () => { modal.style.display = 'none'; if(onConfirm) onConfirm(); }; }
+
+    // Wishlist
+    function toggleWishlist(productId) {
+        if (wishlist.includes(productId)) wishlist = wishlist.filter(id => id !== productId);
+        else wishlist.push(productId);
+        saveWishlist();
+        renderCurrentPage();
+        showToast(wishlist.includes(productId) ? 'Added to wishlist' : 'Removed from wishlist');
+    }
+    function isInWishlist(productId) { return wishlist.includes(productId); }
+
+    // Cart
+    function addToCart(product, size, fabric, qty, imageIndex) {
+        const selectedImageObj = product.images[imageIndex];
+        const finalPrice = product.fabricPrices && product.fabricPrices[fabric.id] ? product.fabricPrices[fabric.id] : product.basePrice;
+        const existing = cart.find(i => i.id === product.id && i.size === size && i.fabricId === fabric.id && i.imageIndex === imageIndex);
+        if (existing) existing.quantity += qty;
+        else cart.push({
+            id: product.id, name: product.name, sku: selectedImageObj.sku, size, fabricId: fabric.id, fabricName: fabric.name,
+            quantity: qty, finalPrice, imageUrl: selectedImageObj.url, imageIndex, selectedImage: selectedImageObj.url
+        });
+        saveCart();
+        showToast(`${product.name} (${size}, ${fabric.name}) - ${selectedImageObj.sku} x${qty} added!`);
+        renderCartSidebar();
+        if (currentPage === 'cart') renderCartPage();
+    }
+    function removeFromCart(index) { cart.splice(index,1); saveCart(); renderCartSidebar(); if(currentPage==='cart') renderCartPage(); }
+    function renderCartSidebar() {
+        const container = document.getElementById('cartItemsList');
+        if(!container) return;
+        if(cart.length===0) { container.innerHTML='<p>Cart empty</p>'; document.getElementById('cartTotalPrice').innerText='0.00'; return; }
+        container.innerHTML = cart.map((item,idx)=>`<div class="cart-item"><img class="cart-item-img" src="${item.imageUrl}"><div class="cart-item-details"><div>${item.name}</div><div>SKU: ${item.sku}</div><div>Size: ${item.size} | Fabric: ${item.fabricName} | Qty: ${item.quantity}</div><div>৳ ${(item.finalPrice * item.quantity).toFixed(2)}</div></div><button class="cart-remove" data-idx="${idx}"><i class="fas fa-trash"></i></button></div>`).join('');
+        document.querySelectorAll('.cart-remove').forEach(btn=>btn.addEventListener('click',()=>removeFromCart(parseInt(btn.dataset.idx))));
+        document.getElementById('cartTotalPrice').innerText = cart.reduce((s,i)=>s+i.finalPrice*i.quantity,0).toFixed(2);
+    }
+
+    // Product detail with per‑image sizes
+    function showProductDetail(productId) {
+        currentDetailProduct = products.find(p => p.id === productId);
+        if(!currentDetailProduct) return;
+        selectedImageIndex = 0;
+        const firstImageSizes = currentDetailProduct.images[0].sizes || [];
+        selectedSize = firstImageSizes.length ? firstImageSizes[0] : null;
+        quantity = 1;
+        selectedFabric = fabrics.length ? fabrics[0] : { id: 1, name: "Standard" };
+        const p = currentDetailProduct;
+        function getPrice(f) { return p.fabricPrices[f.id] !== undefined ? p.fabricPrices[f.id] : p.basePrice; }
+        function renderSizeButtons(sizesArray) {
+            const container = document.getElementById('sizeGroupContainer');
+            if(!container) return;
+            if(!sizesArray || sizesArray.length === 0) {
+                container.innerHTML = '<div style="color:#aaa;">No sizes available for this variant</div>';
+                selectedSize = null;
+                return;
+            }
+            container.innerHTML = sizesArray.map(s => `<div class="size-btn ${s === selectedSize ? 'selected' : ''}" data-size="${s}">${s}</div>`).join('');
+            document.querySelectorAll('.size-btn').forEach(btn => btn.addEventListener('click', () => {
+                document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedSize = btn.dataset.size;
+            }));
+            if(!selectedSize || !sizesArray.includes(selectedSize)) {
+                selectedSize = sizesArray[0];
+                const firstBtn = container.querySelector('.size-btn');
+                if(firstBtn) firstBtn.classList.add('selected');
+            }
+        }
+        function updateDisplay() {
+            const imgObj = p.images[selectedImageIndex];
+            document.getElementById('detailSku').innerText = `Product Code: ${imgObj.sku}`;
+            document.getElementById('detailMainImg').src = imgObj.url;
+            document.querySelectorAll('.thumbnail').forEach((th, i) => {
+                if (i === selectedImageIndex) th.classList.add('active');
+                else th.classList.remove('active');
+            });
+            renderSizeButtons(imgObj.sizes || []);
+            document.getElementById('dynamicPrice').innerText = `৳ ${getPrice(selectedFabric)}`;
+        }
+        const images = p.images;
+        const inWish = isInWishlist(p.id);
+        document.getElementById('detailContent').innerHTML = `
+            <div class="detail-flex">
+                <div class="detail-img-col">
+                    <img id="detailMainImg" class="main-gallery-img" src="${images[0].url}">
+                    <div class="thumbnail-row">${images.map((img,i)=>`<img class="thumbnail ${i===0?'active':''}" data-index="${i}" src="${img.url}">`).join('')}</div>
+                </div>
+                <div class="detail-info-col">
+                    <div class="detail-name">${p.name}</div>
+                    <div class="detail-sku" id="detailSku">Product Code: ${images[0].sku}</div>
+                    <div class="detail-price" id="dynamicPrice">৳ ${getPrice(selectedFabric)}</div>
+                    <div><strong>Product Options</strong><br>
+                        <div class="size-group" id="sizeGroupContainer"></div>
+                        <div class="fabric-group">${fabrics.map(f=>`<div class="fabric-btn ${f.id===selectedFabric.id?'selected':''}" data-fabric-id="${f.id}" data-fabric-name="${f.name}">${f.name}</div>`).join('')}</div>
+                    </div>
+                    <div class="qty-row"><button class="qty-btn" id="qtyMinus">-</button><span class="qty-num" id="qtyNum">1</span><button class="qty-btn" id="qtyPlus">+</button></div>
+                    <button class="add-cart-detail" id="detailAddCart">ADD TO CART</button>
+                    <button class="wishlist-detail-btn" id="detailWishlistBtn"><i class="fas ${inWish ? 'fa-heart' : 'fa-heart-o'}"></i> ${inWish ? 'Remove from Wishlist' : 'Add to Wishlist'}</button>
+                    <div class="spec-box"><h4><i class="fas fa-tag"></i> Specifications</h4><p><strong>Brand:</strong> ${p.brand}<br><strong>Material:</strong> ${p.material}<br><strong>Box:</strong> ${p.boxContent}</p></div>
+                </div>
+            </div>
+            <div class="reviews-area"><h4>Ratings and Reviews (0)</h4><p>No reviews yet.</p><hr><h4>Questions (0)</h4><p>No questions.</p></div>`;
+        // Thumbnail click
+        document.querySelectorAll('.thumbnail').forEach(th => th.addEventListener('click', () => {
+            selectedImageIndex = parseInt(th.dataset.index);
+            updateDisplay();
+        }));
+        // Fabric selection
+        document.querySelectorAll('.fabric-btn').forEach(btn => btn.addEventListener('click', () => {
+            document.querySelectorAll('.fabric-btn').forEach(b=>b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedFabric = { id: parseInt(btn.dataset.fabricId), name: btn.dataset.fabricName };
+            document.getElementById('dynamicPrice').innerText = `৳ ${getPrice(selectedFabric)}`;
+        }));
+        renderSizeButtons(images[0].sizes || []);
+        const qtySpan = document.getElementById('qtyNum');
+        document.getElementById('qtyMinus').onclick = () => { if(quantity>1) { quantity--; qtySpan.innerText = quantity; } };
+        document.getElementById('qtyPlus').onclick = () => { quantity++; qtySpan.innerText = quantity; };
+        document.getElementById('detailAddCart').onclick = () => {
+            if(!selectedSize) { showToast('Please select a size'); return; }
+            addToCart(currentDetailProduct, selectedSize, selectedFabric, quantity, selectedImageIndex);
+            closeDetailPage();
+        };
+        document.getElementById('detailWishlistBtn').onclick = () => { toggleWishlist(currentDetailProduct.id); closeDetailPage(); };
+        document.getElementById('productDetailPage').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+    function closeDetailPage() { document.getElementById('productDetailPage').style.display = 'none'; document.body.style.overflow = ''; }
+
+    // Product listing
+    function getLowestPrice(p) { return p.fabricPrices && Object.keys(p.fabricPrices).length ? Math.min(...Object.values(p.fabricPrices)) : p.basePrice; }
+    function getFilteredProducts() {
+        let filtered = [...products];
+        if(searchQuery) filtered = filtered.filter(p=>p.name.toLowerCase().includes(searchQuery));
+        if(currentFilter==='best') filtered = filtered.filter(p=>p.tag==='best');
+        else if(currentFilter==='new') filtered = filtered.filter(p=>p.tag==='new');
+        else if(currentFilter==='limited') filtered = filtered.filter(p=>p.tag==='limited');
+        return filtered;
+    }
+    function renderProducts(containerId) {
+        const container = document.getElementById(containerId);
+        if(!container) return;
+        const filtered = getFilteredProducts();
+        if(filtered.length===0) { container.innerHTML='<div style="text-align:center; padding:2rem;">No products found</div>'; return; }
+        container.innerHTML = filtered.map(p=>`<div class="product-card" data-id="${p.id}"><img class="product-img" src="${p.images[0].url}" onerror="this.src='https://placehold.co/400x500'"><div class="product-info"><div class="product-title">${p.name}</div><div class="product-price">৳ ${getLowestPrice(p)}</div></div><div class="wishlist-overlay" data-id="${p.id}"><i class="fas ${isInWishlist(p.id)?'fa-heart':'fa-heart-o'}"></i></div></div>`).join('');
+        container.querySelectorAll('.product-card').forEach(card=>card.addEventListener('click',(e)=>{ if(!e.target.closest('.wishlist-overlay')) showProductDetail(parseInt(card.dataset.id)); }));
+        container.querySelectorAll('.wishlist-overlay').forEach(icon=>icon.addEventListener('click',(e)=>{ e.stopPropagation(); toggleWishlist(parseInt(icon.dataset.id)); }));
+    }
+
+    // Wishlist page
+    function renderWishlistPage() {
+        currentPage = 'wishlist';
+        const wishlistProducts = products.filter(p => wishlist.includes(p.id));
+        if (wishlistProducts.length === 0) {
+            document.getElementById('mainContainer').innerHTML = `<div style="text-align:center; padding:3rem;">Your wishlist is empty.<br><button class="back-button" id="continueShopWishlist">Continue Shopping</button></div>`;
+            document.getElementById('continueShopWishlist')?.addEventListener('click', () => renderShop());
+            return;
+        }
+        const wishlistHtml = wishlistProducts.map(p => `
+            <div class="product-card" data-id="${p.id}" style="display: flex; align-items: center; gap: 1rem; padding: 1rem; flex-wrap: wrap;">
+                <img src="${p.images[0].url}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 12px;">
+                <div style="flex:1;"><div><strong>${p.name}</strong></div><div>First SKU: ${p.images[0].sku}</div><div>Price: ৳ ${getLowestPrice(p)}</div></div>
+                <button class="modal-btn view-detail-wishlist" data-id="${p.id}">View</button>
+                <button class="admin-btn-secondary remove-wishlist" data-id="${p.id}">Remove</button>
+            </div>
+        `).join('');
+        document.getElementById('mainContainer').innerHTML = `<h2>My Wishlist</h2><div style="display:flex; flex-direction:column; gap:1rem;">${wishlistHtml}</div><button class="back-button" id="backHomeWishlist">Back to Home</button>`;
+        document.querySelectorAll('.view-detail-wishlist').forEach(btn => btn.addEventListener('click', (e) => { showProductDetail(parseInt(btn.dataset.id)); }));
+        document.querySelectorAll('.remove-wishlist').forEach(btn => btn.addEventListener('click', (e) => { toggleWishlist(parseInt(btn.dataset.id)); renderWishlistPage(); }));
+        document.getElementById('backHomeWishlist').onclick = () => renderHome();
+    }
+
+    // Banner
+    function initAdBanner() {
+        const container = document.getElementById('fullWidthAdContainer');
+        if(!container) return;
+        if(adInterval) clearInterval(adInterval);
+        container.innerHTML = banners.map((ad,idx)=>`<div class="ad-banner-slide" style="background-image: url(${ad.image});"></div>`).join('');
+        let slides = document.querySelectorAll('.ad-banner-slide');
+        if(slides.length) { slides[0].classList.add('active'); let current=0; adInterval = setInterval(()=>{ if(slides.length){ slides[current].classList.remove('active'); current=(current+1)%slides.length; slides[current].classList.add('active'); } },3500); }
+    }
+
+    // Page renders
+    function renderHome() {
+        currentPage='home';
+        document.getElementById('mainContainer').innerHTML = `<div class="ad-banner"><div class="ad-banner-container" id="fullWidthAdContainer"></div></div><div class="section-header"><h2>TRENDING NOW</h2><span class="view-all" id="viewAllTrending">VIEW ALL →</span></div><div class="filter-bar"><button class="filter-btn ${currentFilter==='all'?'active':''}" data-filter="all">ALL</button><button class="filter-btn ${currentFilter==='best'?'active':''}" data-filter="best">BEST</button><button class="filter-btn ${currentFilter==='new'?'active':''}" data-filter="new">NEW</button><button class="filter-btn ${currentFilter==='limited'?'active':''}" data-filter="limited">LIMITED</button></div><div id="productGrid" class="product-grid"></div>`;
+        initAdBanner(); renderProducts('productGrid');
+        document.querySelectorAll('.filter-btn').forEach(btn=>btn.onclick=()=>{ currentFilter=btn.dataset.filter; renderHome(); });
+        document.getElementById('viewAllTrending').onclick=()=>renderShop();
+        document.getElementById('searchInput').oninput = (e) => { searchQuery=e.target.value.toLowerCase(); renderHome(); };
+    }
+    function renderShop() {
+        currentPage='shop';
+        document.getElementById('mainContainer').innerHTML = `<h2>ALL PRODUCTS</h2><div class="filter-bar"><button class="filter-btn ${currentFilter==='all'?'active':''}" data-filter="all">ALL</button><button class="filter-btn ${currentFilter==='best'?'active':''}" data-filter="best">BEST</button><button class="filter-btn ${currentFilter==='new'?'active':''}" data-filter="new">NEW</button><button class="filter-btn ${currentFilter==='limited'?'active':''}" data-filter="limited">LIMITED</button></div><div id="productGrid" class="product-grid"></div>`;
+        renderProducts('productGrid');
+        document.querySelectorAll('.filter-btn').forEach(btn=>btn.onclick=()=>{ currentFilter=btn.dataset.filter; renderShop(); });
+        document.getElementById('searchInput').oninput = (e) => { searchQuery=e.target.value.toLowerCase(); renderShop(); };
+    }
+    function renderCartPage() {
+        currentPage='cart';
+        const container = document.getElementById('mainContainer');
+        if(cart.length===0){ container.innerHTML=`<div style="text-align:center; padding:3rem;">Cart empty.<br><button class="back-button" id="continueShopBtn">Continue Shopping</button></div>`; document.getElementById('continueShopBtn')?.addEventListener('click',()=>renderShop()); return; }
+        const subtotal = cart.reduce((s,i)=>s+i.finalPrice*i.quantity,0);
+        const extraTotal = extraCharges.reduce((s,ch)=>s+ch.amount,0);
+        const total = subtotal + extraTotal;
+        const chargesHtml = extraCharges.map(ch => `<div>${ch.name}: ৳ ${ch.amount}</div>`).join('');
+        const itemsHtml = cart.map((item,idx)=>`<div class="cart-item" style="background:#111; margin-bottom:1rem; padding:1rem; border-radius:20px;"><img src="${item.imageUrl}" style="width:70px; border-radius:12px;"><div style="flex:1; margin-left:1rem;"><div>${item.name}</div><div>SKU: ${item.sku}</div><div>Size: ${item.size} | Fabric: ${item.fabricName} | Qty: ${item.quantity}</div><div>৳ ${(item.finalPrice * item.quantity).toFixed(2)}</div></div><button class="cart-remove" data-idx="${idx}"><i class="fas fa-trash"></i></button></div>`).join('');
+        container.innerHTML = `<h2>Your Cart</h2>${itemsHtml}<div style="margin-top:1rem;"><div>Subtotal: ৳ ${subtotal.toFixed(2)}</div>${chargesHtml}<div style="font-size:1.3rem; font-weight:bold;">Total (excluding delivery): ৳ ${total.toFixed(2)}</div></div><button id="checkoutPageBtn" class="modal-btn">Proceed to Checkout</button><button class="back-button" id="backHomeFromCart">Back to Home</button>`;
+        document.querySelectorAll('.cart-remove').forEach(btn=>btn.addEventListener('click',()=>{ removeFromCart(parseInt(btn.dataset.idx)); renderCartPage(); }));
+        document.getElementById('checkoutPageBtn').onclick=()=>showCheckoutForm();
+        document.getElementById('backHomeFromCart').onclick=()=>renderHome();
+    }
+
+    function showCheckoutForm() {
+        if(cart.length===0) return;
+        const subtotal = cart.reduce((s,i)=>s+i.finalPrice*i.quantity,0);
+        const extraTotal = extraCharges.reduce((s,ch)=>s+ch.amount,0);
+        const deliveryInside = settings.deliveryInsideDhaka || 60;
+        const deliveryOutside = settings.deliveryOutsideDhaka || 120;
+        let selectedZone = 'inside';
+        let currentDelivery = deliveryInside;
+        
+        function updateOrderSummary() {
+            const total = subtotal + extraTotal + currentDelivery;
+            document.getElementById('checkoutSubtotal').innerText = subtotal.toFixed(2);
+            document.getElementById('checkoutExtra').innerHTML = extraCharges.map(ch => `<div>${ch.name}: ৳ ${ch.amount}</div>`).join('');
+            document.getElementById('checkoutDelivery').innerText = currentDelivery;
+            document.getElementById('checkoutTotal').innerText = total.toFixed(2);
+        }
+        
+        showModal('Complete Order', `
+            <div class="checkout-form">
+                <h3>Delivery Details</h3>
+                <input type="text" id="fullName" placeholder="Full Name *">
+                <input type="tel" id="phone" placeholder="Phone *">
+                <input type="email" id="email" placeholder="Email *">
+                <textarea id="address" rows="2" placeholder="Address *"></textarea>
+                <label>Delivery Zone</label>
+                <select id="deliveryZone">
+                    <option value="inside">Inside Dhaka (Delivery: ৳ ${deliveryInside})</option>
+                    <option value="outside">Outside Dhaka (Delivery: ৳ ${deliveryOutside})</option>
+                </select>
+                <div class="payment-card"><i class="fas fa-truck"></i><h4>Cash on Delivery</h4></div>
+                <div><strong>Order Summary</strong></div>
+                <div>Subtotal: ৳ <span id="checkoutSubtotal">${subtotal.toFixed(2)}</span></div>
+                <div id="checkoutExtra">${extraCharges.map(ch => `<div>${ch.name}: ৳ ${ch.amount}</div>`).join('')}</div>
+                <div>Delivery Charge: ৳ <span id="checkoutDelivery">${deliveryInside}</span></div>
+                <div><strong>Total: ৳ <span id="checkoutTotal">${(subtotal + extraTotal + deliveryInside).toFixed(2)}</span></strong></div>
+                <button id="confirmOrderBtn" class="modal-btn">PLACE ORDER</button>
+                <button id="cancelOrderBtn" class="modal-btn" style="background:#333;">Cancel</button>
+            </div>
+        `, ()=>{});
+        
+        setTimeout(() => {
+            const zoneSelect = document.getElementById('deliveryZone');
+            if (zoneSelect) {
+                zoneSelect.addEventListener('change', (e) => {
+                    selectedZone = e.target.value;
+                    currentDelivery = selectedZone === 'inside' ? deliveryInside : deliveryOutside;
+                    updateOrderSummary();
+                });
+            }
+            updateOrderSummary();
+            
+            document.getElementById('confirmOrderBtn').onclick = () => {
+                const name = document.getElementById('fullName')?.value.trim();
+                const phone = document.getElementById('phone')?.value.trim();
+                const email = document.getElementById('email')?.value.trim();
+                const address = document.getElementById('address')?.value.trim();
+                const zone = document.getElementById('deliveryZone')?.value;
+                if(!name||!phone||!email||!address) { showToast('Fill all fields'); return; }
+                const deliveryCharge = zone === 'inside' ? deliveryInside : deliveryOutside;
+                const orderId = 'ORD'+Date.now()+Math.floor(Math.random()*1000);
+                const items = cart.map(i=>({name:i.name, sku:i.sku, size:i.size, fabric:i.fabricName, quantity:i.quantity, price:i.finalPrice, image:i.imageUrl}));
+                const itemsHtml = cart.map(i=>`<tr>。<img src="${i.imageUrl}" width="40"></td>。<strong>${i.name}</strong><br>SKU: ${i.sku}<br>(${i.size}, ${i.fabricName}) x${i.quantity} = ৳${(i.finalPrice*i.quantity).toFixed(2)}</td>`).join('');
+                const extraDetails = extraCharges.map(ch => `<div>${ch.name}: ৳ ${ch.amount}</div>`).join('');
+                const total = subtotal + extraTotal + deliveryCharge;
+                const order = { 
+                    id: orderId, date: new Date().toISOString(), customerName: name, phone, email, address, 
+                    deliveryZone: zone === 'inside' ? 'Inside Dhaka' : 'Outside Dhaka',
+                    deliveryCharge: deliveryCharge,
+                    subtotal, extraCharges: [...extraCharges], total, items, status: 'Pending' 
+                };
+                orders.push(order); saveOrders();
+                const receipt = `<div style="background:white; color:black; padding:20px;"><h1 style="color:#ff0000;">ZCHOICE</h1><p>Order: ${orderId}<br>Date: ${new Date().toLocaleString()}</p><h3>Customer</h3><p>${name}<br>${phone}<br>${email}<br>${address}</p><h3>Delivery Zone: ${order.deliveryZone}</h3><h3>Items</h3><table border="1" cellpadding="5">${itemsHtml}</td><p><strong>Subtotal:</strong> ৳${subtotal.toFixed(2)}<br>${extraDetails}<br><strong>Delivery Charge:</strong> ৳${deliveryCharge}<br><strong>Total:</strong> ৳${total.toFixed(2)}</p><p>Payment: Cash on Delivery</p><p>Thank you!</p></div>`;
+                cart = []; saveCart(); document.getElementById('customModal').style.display='none';
+                showModal('Order Placed', `<div id="receiptContent">${receipt}</div><button id="downloadPdfBtn" class="modal-btn">Download PDF Receipt</button>`, ()=>{}); 
+                setTimeout(()=>{ document.getElementById('downloadPdfBtn')?.addEventListener('click',()=>{ html2pdf().from(document.getElementById('receiptContent')).set({margin:0.5, filename:`Zchoice_${orderId}.pdf`}).save(); }); },100);
+                renderCartSidebar(); if(currentPage==='cart') renderCartPage();
+            };
+            document.getElementById('cancelOrderBtn').onclick = () => document.getElementById('customModal').style.display='none';
+        }, 50);
+    }
+    
+    function renderCurrentPage() { 
+        if(currentPage==='home') renderHome(); 
+        else if(currentPage==='shop') renderShop(); 
+        else if(currentPage==='cart') renderCartPage(); 
+        else if(currentPage==='wishlist') renderWishlistPage();
+        else renderHome(); 
+    }
+    function showSidebarPage(section) {
+        if(section==='trackorder') document.getElementById('mainContainer').innerHTML = `<div><h2>Track Order</h2><input id="trackId" placeholder="Order ID"><button id="trackBtn" class="modal-btn">Track</button><p id="trackRes"></p></div>`;
+        else if(section==='contact') document.getElementById('mainContainer').innerHTML = `<div class="page-content">${pages.contact}</div>`;
+        else if(section==='about') document.getElementById('mainContainer').innerHTML = `<div class="page-content">${pages.about}</div>`;
+        else if(section==='faq') document.getElementById('mainContainer').innerHTML = `<div class="page-content">${pages.faq}</div>`;
+        else if(section==='wishlist') { currentPage = 'wishlist'; renderWishlistPage(); return; }
+        if(section==='trackorder') document.getElementById('trackBtn')?.addEventListener('click',()=>{ const id=document.getElementById('trackId').value; const order=orders.find(o=>o.id===id); document.getElementById('trackRes').innerHTML=order?`Status: ${order.status}`:'Not found'; });
+        currentPage = 'home';
+    }
+
+    // ==================== ADMIN PANEL (with delivery charge settings) ====================
+    let adminLogged = false;
+    function checkAdminLogin() { if(localStorage.getItem(STORAGE_ADMIN_LOGGED)==='true') { adminLogged=true; showAdminDashboard(); } else showAdminLogin(); }
+    function showAdminLogin() { document.getElementById('adminContainer').innerHTML = `<div class="login-box"><h2>Admin Login</h2><input type="text" id="adminUser" placeholder="Username"><input type="password" id="adminPass" placeholder="Password"><button id="adminLoginBtn" class="admin-btn">Login</button></div>`; document.getElementById('adminLoginBtn').onclick = () => { if(document.getElementById('adminUser').value.trim() === '459847' && btoa(document.getElementById('adminPass').value) === (settings.adminPasswordHash || btoa('459747'))) { localStorage.setItem(STORAGE_ADMIN_LOGGED,'true'); adminLogged=true; showAdminDashboard(); } else showToast('Invalid credentials'); }; }
+    function showAdminDashboard() { 
+        document.getElementById('adminContainer').innerHTML = `<div class="admin-header"><h2>Admin Dashboard</h2><button id="adminLogoutBtn" class="admin-btn admin-btn-secondary">Logout</button></div><div class="admin-tabs"><button class="admin-tab active" data-tab="products">Products</button><button class="admin-tab" data-tab="orders">Orders</button><button class="admin-tab" data-tab="banners">Banners</button><button class="admin-tab" data-tab="fabrics">Fabrics</button><button class="admin-tab" data-tab="pages">Pages</button><button class="admin-tab" data-tab="charges">Extra Charges</button><button class="admin-tab" data-tab="settings">Settings</button></div><div id="adminProductsPanel" class="admin-panel active"></div><div id="adminOrdersPanel" class="admin-panel"></div><div id="adminBannersPanel" class="admin-panel"></div><div id="adminFabricsPanel" class="admin-panel"></div><div id="adminPagesPanel" class="admin-panel"></div><div id="adminChargesPanel" class="admin-panel"></div><div id="adminSettingsPanel" class="admin-panel"></div>`;
+        renderAdminProducts();
+        renderAdminOrders();
+        renderAdminBanners();
+        renderAdminFabrics();
+        renderAdminPages();
+        renderAdminCharges();
+        renderAdminSettings();
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const targetId = `admin${tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)}Panel`;
+                document.querySelectorAll('.admin-panel').forEach(pan => pan.classList.remove('active'));
+                document.getElementById(targetId).classList.add('active');
+                if (tab.dataset.tab === 'orders') renderAdminOrders();
+                if (tab.dataset.tab === 'banners') renderAdminBanners();
+                if (tab.dataset.tab === 'fabrics') renderAdminFabrics();
+                if (tab.dataset.tab === 'pages') renderAdminPages();
+                if (tab.dataset.tab === 'charges') renderAdminCharges();
+                if (tab.dataset.tab === 'settings') renderAdminSettings();
+                if (tab.dataset.tab === 'products') renderAdminProducts();
+            });
+        });
+        document.getElementById('adminLogoutBtn').onclick = () => { localStorage.removeItem(STORAGE_ADMIN_LOGGED); adminLogged=false; showAdminLogin(); };
+    }
+
+    // ========== PRODUCTS MANAGEMENT (full with size buttons) ==========
+    function renderAdminProducts() {
+        const panel = document.getElementById('adminProductsPanel');
+        panel.innerHTML = `<button id="addProductBtn" class="admin-btn">+ Add Product (Multiple Images with SKU & Sizes)</button><p class="upload-hint">Upload images, set SKU and add individual sizes for each image.</p><table><thead><th>ID</th><th>Image</th><th>Name</th><th>Base Price</th><th>Tag</th><th>Actions</th></thead><tbody id="adminProductsTable"></tbody></table>`;
+        refreshProductsTable();
+    }
+    function refreshProductsTable() {
+        const tbody = document.getElementById('adminProductsTable');
+        if (!tbody) return;
+        tbody.innerHTML = products.map(p => `
+            <tr>
+                <td>${p.id}</td>
+                <td><img src="${p.images[0].url}" width="40" style="border-radius:8px;"></td>
+                <td>${p.name}</td>
+                <td>৳${p.basePrice}</td>
+                <td>${p.tag}</td>
+                <td><button class="admin-btn-secondary edit-prod" data-id="${p.id}">Edit</button> <button class="admin-btn-secondary del-prod" data-id="${p.id}">Delete</button></td>
+            </tr>
+        `).join('');
+    }
+    // Product addition and editing with dynamic size buttons (delegation)
+    document.getElementById('adminContainer').addEventListener('click', async (e) => {
+        if (e.target.id === 'addProductBtn') {
+            let fabricPriceHtml = '';
+            fabrics.forEach(f => { fabricPriceHtml += `<div class="price-input-group"><label>${f.name} Price:</label><input type="number" class="fabric-price-input" data-fabric-id="${f.id}" placeholder="Optional"></div>`; });
+            showModal('Add Product', `<div><input id="pName" placeholder="Product Name"><input id="pBasePrice" type="number" placeholder="Base Price"><div><strong>Fabric Prices</strong></div>${fabricPriceHtml}<div><strong>Product Images & SKUs & Sizes</strong></div><input type="file" id="pImages" multiple accept="image/*"><div id="pImageSkuContainer"></div><select id="pTag"><option value="best">Best</option><option value="new">New</option><option value="limited">Limited</option></select><button id="saveNewBtn" class="admin-btn">Save Product</button></div>`, ()=>{});
+            setTimeout(() => {
+                let imageItems = [];
+                const fileInput = document.getElementById('pImages');
+                fileInput.onchange = async (e2) => {
+                    const files = Array.from(e2.target.files);
+                    imageItems = [];
+                    for (let f of files) {
+                        const b64 = await resizeImageToBase64(f, 400, 500);
+                        imageItems.push({ url: b64, sku: "", sizes: [] });
+                    }
+                    renderImageSkuContainer(imageItems, 'pImageSkuContainer', false);
+                };
+                function renderImageSkuContainer(items, containerId, isEdit) {
+                    const container = document.getElementById(containerId);
+                    if (!container) return;
+                    container.innerHTML = items.map((item, idx) => {
+                        const sizesHtml = (item.sizes || []).map(sz => `<span class="size-tag">${sz} <button type="button" class="${isEdit ? 'edit-remove-size' : 'remove-size'}" data-idx="${idx}" data-size="${sz}">✖</button></span>`).join('');
+                        return `
+                            <div class="image-sku-group" data-idx="${idx}">
+                                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                                    <img src="${item.url}" width="70">
+                                    <input type="text" placeholder="SKU" class="${isEdit ? 'edit-sku-input' : 'image-sku-input'}" data-idx="${idx}" value="${item.sku}" style="width:130px;">
+                                </div>
+                                <div><strong>Sizes:</strong> <span class="size-list-${idx}">${sizesHtml}</span></div>
+                                <div class="add-size-input">
+                                    <input type="text" placeholder="New size" class="${isEdit ? 'edit-new-size-input' : 'new-size-input'}" data-idx="${idx}">
+                                    <button type="button" class="${isEdit ? 'edit-add-size-btn' : 'add-size-btn'}" data-idx="${idx}">+ Add Size</button>
+                                </div>
+                                <button type="button" class="${isEdit ? 'edit-remove-img' : 'remove-image-btn'}" data-idx="${idx}" style="background:red; border:none; color:white; border-radius:50%; padding:4px 8px; margin-top:8px;">Remove Image</button>
+                            </div>
+                        `;
+                    }).join('');
+                    if (!isEdit) {
+                        document.querySelectorAll('.image-sku-input').forEach(inp => inp.addEventListener('input', (e3) => {
+                            const idx = parseInt(inp.dataset.idx);
+                            items[idx].sku = inp.value;
+                        }));
+                        document.querySelectorAll('.add-size-btn').forEach(btn => btn.addEventListener('click', () => {
+                            const idx = parseInt(btn.dataset.idx);
+                            const input = document.querySelector(`.new-size-input[data-idx="${idx}"]`);
+                            const newSize = input.value.trim();
+                            if (newSize && !items[idx].sizes.includes(newSize)) {
+                                items[idx].sizes.push(newSize);
+                                renderImageSkuContainer(items, containerId, isEdit);
+                            } else if (newSize) showToast('Size already exists');
+                            input.value = '';
+                        }));
+                        document.querySelectorAll('.remove-size').forEach(btn => btn.addEventListener('click', () => {
+                            const idx = parseInt(btn.dataset.idx);
+                            const sizeToRemove = btn.dataset.size;
+                            items[idx].sizes = items[idx].sizes.filter(s => s !== sizeToRemove);
+                            renderImageSkuContainer(items, containerId, isEdit);
+                        }));
+                        document.querySelectorAll('.remove-image-btn').forEach(btn => btn.addEventListener('click', () => {
+                            const idx = parseInt(btn.dataset.idx);
+                            items.splice(idx, 1);
+                            renderImageSkuContainer(items, containerId, isEdit);
+                        }));
+                    }
+                }
+                document.getElementById('saveNewBtn').onclick = async () => {
+                    const name = document.getElementById('pName').value;
+                    const basePrice = parseFloat(document.getElementById('pBasePrice').value);
+                    const tag = document.getElementById('pTag').value;
+                    if (!name || isNaN(basePrice) || imageItems.length === 0) { showToast('Fill name, price and upload at least one image with SKU'); return; }
+                    for (let img of imageItems) if (!img.sku.trim()) { showToast('Please provide SKU for all images'); return; }
+                    const fabricPrices = {};
+                    document.querySelectorAll('.fabric-price-input').forEach(inp => { const fid = parseInt(inp.dataset.fabricId); const val = inp.value.trim(); if (val !== '') fabricPrices[fid] = parseFloat(val); });
+                    const newId = products.length ? Math.max(...products.map(p=>p.id)) + 1 : 1;
+                    products.push({ id: newId, name, basePrice, images: imageItems, tag, fabricPrices, brand: "Zchoice", material: "Premium", boxContent: "1 item" });
+                    saveProducts(); refreshProductsTable(); renderHome();
+                    document.getElementById('customModal').style.display = 'none';
+                    showToast('Product added');
+                };
+            }, 50);
+        }
+        if (e.target.classList.contains('edit-prod')) {
+            const id = parseInt(e.target.dataset.id);
+            const p = products.find(p => p.id === id);
+            let imagesArr = [...p.images];
+            let fabricPriceHtml = '';
+            fabrics.forEach(f => {
+                const currentPrice = p.fabricPrices[f.id] !== undefined ? p.fabricPrices[f.id] : '';
+                fabricPriceHtml += `<div class="price-input-group"><label>${f.name} Price:</label><input type="number" class="fabric-price-input-edit" data-fabric-id="${f.id}" value="${currentPrice}"></div>`;
+            });
+            showModal('Edit Product', `<div><input id="eName" value="${p.name}"><input id="eBasePrice" value="${p.basePrice}" type="number"><div><strong>Fabric Prices</strong></div>${fabricPriceHtml}<div><strong>Product Images & SKUs & Sizes</strong></div><input type="file" id="eImages" multiple accept="image/*"><div id="eImageSkuContainer"></div><select id="eTag"><option ${p.tag==='best'?'selected':''}>best</option><option ${p.tag==='new'?'selected':''}>new</option><option ${p.tag==='limited'?'selected':''}>limited</option></select><button id="updateBtn" class="admin-btn">Update</button></div>`, ()=>{});
+            setTimeout(() => {
+                function renderEditImageList() {
+                    const container = document.getElementById('eImageSkuContainer');
+                    if (!container) return;
+                    container.innerHTML = imagesArr.map((item, idx) => {
+                        const sizesHtml = (item.sizes || []).map(sz => `<span class="size-tag">${sz} <button type="button" class="edit-remove-size" data-idx="${idx}" data-size="${sz}">✖</button></span>`).join('');
+                        return `
+                            <div class="image-sku-group" data-idx="${idx}">
+                                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                                    <img src="${item.url}" width="70">
+                                    <input type="text" placeholder="SKU" class="edit-sku-input" data-idx="${idx}" value="${item.sku}" style="width:130px;">
+                                </div>
+                                <div><strong>Sizes:</strong> <span class="size-list-${idx}">${sizesHtml}</span></div>
+                                <div class="add-size-input">
+                                    <input type="text" placeholder="New size" class="edit-new-size-input" data-idx="${idx}">
+                                    <button type="button" class="edit-add-size-btn" data-idx="${idx}">+ Add Size</button>
+                                </div>
+                                <button type="button" class="edit-remove-img" data-idx="${idx}" style="background:red; border:none; color:white; border-radius:50%; padding:4px 8px; margin-top:8px;">Remove Image</button>
+                            </div>
+                        `;
+                    }).join('');
+                    document.querySelectorAll('.edit-sku-input').forEach(inp => inp.addEventListener('input', (e2) => {
+                        const idx = parseInt(inp.dataset.idx);
+                        imagesArr[idx].sku = inp.value;
+                    }));
+                    document.querySelectorAll('.edit-add-size-btn').forEach(btn => btn.addEventListener('click', () => {
+                        const idx = parseInt(btn.dataset.idx);
+                        const input = document.querySelector(`.edit-new-size-input[data-idx="${idx}"]`);
+                        const newSize = input.value.trim();
+                        if (newSize && !(imagesArr[idx].sizes || []).includes(newSize)) {
+                            if (!imagesArr[idx].sizes) imagesArr[idx].sizes = [];
+                            imagesArr[idx].sizes.push(newSize);
+                            renderEditImageList();
+                        } else if (newSize) showToast('Size already exists');
+                        input.value = '';
+                    }));
+                    document.querySelectorAll('.edit-remove-size').forEach(btn => btn.addEventListener('click', () => {
+                        const idx = parseInt(btn.dataset.idx);
+                        const sizeToRemove = btn.dataset.size;
+                        imagesArr[idx].sizes = (imagesArr[idx].sizes || []).filter(s => s !== sizeToRemove);
+                        renderEditImageList();
+                    }));
+                    document.querySelectorAll('.edit-remove-img').forEach(btn => btn.addEventListener('click', () => {
+                        const idx = parseInt(btn.dataset.idx);
+                        imagesArr.splice(idx, 1);
+                        renderEditImageList();
+                    }));
+                }
+                renderEditImageList();
+                const fileInput = document.getElementById('eImages');
+                fileInput.onchange = async (e2) => {
+                    const files = Array.from(e2.target.files);
+                    for (let f of files) {
+                        const b64 = await resizeImageToBase64(f, 400, 500);
+                        imagesArr.push({ url: b64, sku: "", sizes: [] });
+                    }
+                    renderEditImageList();
+                };
+                document.getElementById('updateBtn').onclick = () => {
+                    p.name = document.getElementById('eName').value;
+                    p.basePrice = parseFloat(document.getElementById('eBasePrice').value);
+                    const fabricPrices = {};
+                    document.querySelectorAll('.fabric-price-input-edit').forEach(inp => { const fid = parseInt(inp.dataset.fabricId); const val = inp.value.trim(); if (val !== '') fabricPrices[fid] = parseFloat(val); });
+                    p.fabricPrices = fabricPrices;
+                    for (let img of imagesArr) if (!img.sku.trim()) { showToast('Please provide SKU for all images'); return; }
+                    p.images = imagesArr;
+                    p.tag = document.getElementById('eTag').value;
+                    saveProducts(); refreshProductsTable(); renderHome();
+                    document.getElementById('customModal').style.display = 'none';
+                    showToast('Product updated');
+                };
+            }, 50);
+        }
+        if (e.target.classList.contains('del-prod')) {
+            if (confirm('Delete this product?')) {
+                const id = parseInt(e.target.dataset.id);
+                products = products.filter(p => p.id !== id);
+                saveProducts(); refreshProductsTable(); renderHome();
+                showToast('Product deleted');
+            }
+        }
+    });
+
+    // ========== ORDERS ==========
+    function renderAdminOrders() {
+        const panel = document.getElementById('adminOrdersPanel');
+        panel.innerHTML = `<table><thead><th>Order ID</th><th>Customer</th><th>Zone</th><th>Delivery</th><th>Subtotal</th><th>Extra</th><th>Total</th><th>Status</th><th>Actions</th></thead><tbody id="adminOrdersTable"></tbody></td>`;
+        refreshOrdersTable();
+    }
+    function refreshOrdersTable() {
+        const tbody = document.getElementById('adminOrdersTable');
+        if (!tbody) return;
+        tbody.innerHTML = orders.slice().reverse().map(o => `
+            <tr>
+                <td>${o.id}</td>
+                <td>${o.customerName}</td>
+                <td>${o.deliveryZone || 'N/A'}</td>
+                <td>৳${o.deliveryCharge || 0}</td>
+                <td>৳${o.subtotal}</td>
+                <td>${(o.extraCharges || []).map(c=>`${c.name}:${c.amount}`).join(', ')}</td>
+                <td>৳${o.total}</td>
+                <td><select class="status-update" data-id="${o.id}"><option ${o.status==='Pending'?'selected':''}>Pending</option><option ${o.status==='Processing'?'selected':''}>Processing</option><option ${o.status==='Shipped'?'selected':''}>Shipped</option><option ${o.status==='Delivered'?'selected':''}>Delivered</option><option ${o.status==='Cancelled'?'selected':''}>Cancelled</option></select></td>
+                <td><button class="admin-btn-secondary cancel-order" data-id="${o.id}">Cancel</button> <button class="admin-btn-secondary view-order" data-id="${o.id}">View</button> <button class="admin-btn-secondary download-order-pdf" data-id="${o.id}">PDF</button></td>
+            </tr>
+        `).join('');
+        document.querySelectorAll('.status-update').forEach(sel => sel.addEventListener('change', () => {
+            const ord = orders.find(o => o.id === sel.dataset.id);
+            if (ord) { ord.status = sel.value; saveOrders(); refreshOrdersTable(); showToast(`Order ${ord.id} status updated`); }
+        }));
+        document.querySelectorAll('.cancel-order').forEach(btn => btn.addEventListener('click', () => {
+            const ord = orders.find(o => o.id === btn.dataset.id);
+            if (ord && ord.status !== 'Cancelled') { ord.status = 'Cancelled'; saveOrders(); refreshOrdersTable(); showToast(`Order ${ord.id} cancelled`); }
+        }));
+        document.querySelectorAll('.view-order').forEach(btn => btn.addEventListener('click', () => {
+            const ord = orders.find(o => o.id === btn.dataset.id);
+            if (ord) showModal('Order Details', `<div><strong>${ord.customerName}</strong><br>${ord.phone}<br>${ord.address}<br><strong>Delivery Zone:</strong> ${ord.deliveryZone}<br><strong>Delivery Charge:</strong> ৳${ord.deliveryCharge}<br><strong>Items:</strong><br>${ord.items.map(i=>`${i.name} (${i.size}, ${i.fabric}) x${i.quantity} = ৳${(i.price*i.quantity).toFixed(2)} <img src="${i.image}" width="30">`).join('<br>')}<br><strong>Subtotal:</strong> ৳${ord.subtotal}<br><strong>Extra Charges:</strong> ${(ord.extraCharges || []).map(c=>`${c.name}: ${c.amount}`).join(', ')}<br><strong>Total:</strong> ৳${ord.total}<br><strong>Status:</strong> ${ord.status}</div>`, ()=>{}); 
+        }));
+        document.querySelectorAll('.download-order-pdf').forEach(btn => btn.addEventListener('click', () => {
+            const ord = orders.find(o => o.id === btn.dataset.id);
+            if (ord) {
+                const receiptHtml = `<div style="background:white; color:black; padding:20px;"><h1 style="color:#ff0000;">ZCHOICE</h1><p>Order: ${ord.id}<br>Date: ${new Date(ord.date).toLocaleString()}</p><h3>Customer</h3><p>${ord.customerName}<br>${ord.phone}<br>${ord.email}<br>${ord.address}</p><h3>Delivery Zone: ${ord.deliveryZone}</h3><h3>Delivery Charge: ৳${ord.deliveryCharge}</h3><h3>Items</h3><table border="1" cellpadding="5">${ord.items.map(i=>`<tr>。<img src="${i.image}" width="40"></td>。<strong>${i.name}</strong> (${i.size}, ${i.fabric}) x${i.quantity} = ৳${(i.price*i.quantity).toFixed(2)}<br>SKU: ${i.sku}</div></tr>`).join('')}</table><p><strong>Subtotal:</strong> ৳${ord.subtotal}<br><strong>Extra Charges:</strong> ${(ord.extraCharges || []).map(c=>`${c.name}: ${c.amount}`).join(', ')}<br><strong>Total:</strong> ৳${ord.total}<br><strong>Status:</strong> ${ord.status}</p><p>Payment: Cash on Delivery</p><p>Thank you!</p></div>`;
+                const element = document.createElement('div'); element.innerHTML = receiptHtml;
+                html2pdf().from(element).set({ margin: 0.5, filename: `Zchoice_${ord.id}.pdf` }).save();
+            }
+        }));
+    }
+
+    // ========== BANNERS ==========
+    function renderAdminBanners() {
+        const panel = document.getElementById('adminBannersPanel');
+        panel.innerHTML = `<button id="addBanBtn" class="admin-btn">+ Add Banner</button><p class="upload-hint">1200x400px</p><table><thead><th>Preview</th><th>Actions</th></thead><tbody id="adminBanTable"></tbody><tr>`;
+        refreshBannersTable();
+    }
+    function refreshBannersTable() {
+        const tbody = document.getElementById('adminBanTable');
+        if (!tbody) return;
+        tbody.innerHTML = banners.map((b, idx) => `
+            <tr>
+                <td><img src="${b.image}" width="80" style="border-radius:8px;"></td>
+                <td><button class="admin-btn-secondary edit-ban" data-idx="${idx}">Edit</button> <button class="admin-btn-secondary del-ban" data-idx="${idx}">Delete</button></td>
+            </tr>
+        `).join('');
+    }
+    document.getElementById('adminContainer').addEventListener('click', async (e) => {
+        if (e.target.id === 'addBanBtn') {
+            let imgData = '';
+            showModal('Add Banner', `<div><input type="file" id="newBannerImg" accept="image/*"><div id="bannerPreview"></div><button id="saveBanBtn" class="admin-btn">Save</button></div>`, ()=>{});
+            setTimeout(() => {
+                document.getElementById('newBannerImg').onchange = async (e2) => { if (e2.target.files[0]) imgData = await resizeImageToBase64(e2.target.files[0],1200,400); document.getElementById('bannerPreview').innerHTML = `<img src="${imgData}" class="img-preview">`; };
+                document.getElementById('saveBanBtn').onclick = () => { if (imgData) { banners.push({image:imgData}); saveBanners(); refreshBannersTable(); renderHome(); document.getElementById('customModal').style.display='none'; showToast('Banner added'); } };
+            }, 50);
+        }
+        if (e.target.classList.contains('edit-ban')) {
+            const idx = parseInt(e.target.dataset.idx);
+            const ban = banners[idx];
+            let newImg = null;
+            showModal('Edit Banner', `<div><input type="file" id="editBannerImg" accept="image/*"><div><img src="${ban.image}" class="img-preview"></div><button id="updateBanBtn" class="admin-btn">Update</button></div>`, ()=>{});
+            setTimeout(() => {
+                document.getElementById('editBannerImg').onchange = async (e2) => { if (e2.target.files[0]) newImg = await resizeImageToBase64(e2.target.files[0],1200,400); };
+                document.getElementById('updateBanBtn').onclick = () => { if (newImg) { banners[idx].image = newImg; saveBanners(); refreshBannersTable(); renderHome(); document.getElementById('customModal').style.display='none'; showToast('Banner updated'); } };
+            }, 50);
+        }
+        if (e.target.classList.contains('del-ban')) {
+            const idx = parseInt(e.target.dataset.idx);
+            banners.splice(idx, 1);
+            saveBanners(); refreshBannersTable(); renderHome();
+            showToast('Banner deleted');
+        }
+    });
+
+    // ========== FABRICS ==========
+    function renderAdminFabrics() {
+        const panel = document.getElementById('adminFabricsPanel');
+        panel.innerHTML = `<button id="addFabricBtn" class="admin-btn">+ Add Fabric</button><tr><thead><th>ID</th><th>Fabric Name</th><th>Actions</th></thead><tbody id="adminFabricsTable"></tbody></table>`;
+        refreshFabricsTable();
+    }
+    function refreshFabricsTable() {
+        const tbody = document.getElementById('adminFabricsTable');
+        if (!tbody) return;
+        tbody.innerHTML = fabrics.map(f => `
+            <tr>
+                <td>${f.id}</td>
+                <td>${f.name}</td>
+                <td><button class="admin-btn-secondary edit-fabric" data-id="${f.id}">Edit</button> <button class="admin-btn-secondary del-fabric" data-id="${f.id}">Delete</button></td>
+            </tr>
+        `).join('');
+    }
+    document.getElementById('adminContainer').addEventListener('click', (e) => {
+        if (e.target.id === 'addFabricBtn') {
+            showModal('Add Fabric', `<div><input id="newFName" placeholder="Fabric Name"><button id="saveFabricBtn" class="admin-btn">Save</button></div>`, ()=>{});
+            setTimeout(() => {
+                document.getElementById('saveFabricBtn').onclick = () => {
+                    const name = document.getElementById('newFName').value;
+                    if (!name) { showToast('Enter fabric name'); return; }
+                    const newId = fabrics.length ? Math.max(...fabrics.map(f=>f.id)) + 1 : 1;
+                    fabrics.push({ id: newId, name });
+                    saveFabrics(); refreshFabricsTable();
+                    document.getElementById('customModal').style.display='none';
+                    showToast('Fabric added');
+                };
+            }, 50);
+        }
+        if (e.target.classList.contains('edit-fabric')) {
+            const id = parseInt(e.target.dataset.id);
+            const f = fabrics.find(f => f.id === id);
+            showModal('Edit Fabric', `<div><input id="fName" value="${f.name}"><button id="updateFabricBtn" class="admin-btn">Update</button></div>`, ()=>{});
+            setTimeout(() => {
+                document.getElementById('updateFabricBtn').onclick = () => {
+                    f.name = document.getElementById('fName').value;
+                    saveFabrics(); refreshFabricsTable();
+                    document.getElementById('customModal').style.display='none';
+                    showToast('Fabric updated');
+                };
+            }, 50);
+        }
+        if (e.target.classList.contains('del-fabric')) {
+            const id = parseInt(e.target.dataset.id);
+            fabrics = fabrics.filter(f => f.id !== id);
+            saveFabrics(); refreshFabricsTable();
+            showToast('Fabric deleted');
+        }
+    });
+
+    // ========== PAGES ==========
+    function renderAdminPages() {
+        const panel = document.getElementById('adminPagesPanel');
+        panel.innerHTML = `<div><h3>Contact Page</h3><textarea id="contactContent" rows="5" style="width:100%; background:#1a1a1a; color:white; border:1px solid #ff0000; border-radius:12px; padding:10px;">${pages.contact}</textarea><h3>About Page</h3><textarea id="aboutContent" rows="5" style="width:100%; background:#1a1a1a; color:white; border:1px solid #ff0000; border-radius:12px; padding:10px;">${pages.about}</textarea><h3>FAQ Page</h3><textarea id="faqContent" rows="5" style="width:100%; background:#1a1a1a; color:white; border:1px solid #ff0000; border-radius:12px; padding:10px;">${pages.faq}</textarea><button id="savePagesBtn" class="admin-btn" style="margin-top:15px;">Save All Pages</button></div>`;
+        document.getElementById('savePagesBtn').onclick = () => {
+            pages.contact = document.getElementById('contactContent').value;
+            pages.about = document.getElementById('aboutContent').value;
+            pages.faq = document.getElementById('faqContent').value;
+            savePages();
+            showToast('Pages updated');
+        };
+    }
+
+    // ========== EXTRA CHARGES ==========
+    function renderAdminCharges() {
+        const panel = document.getElementById('adminChargesPanel');
+        panel.innerHTML = `<button id="addChargeBtn" class="admin-btn">+ Add Extra Charge</button><table><thead><th>ID</th><th>Charge Name</th><th>Amount (৳)</th><th>Actions</th></thead><tbody id="adminChargesTable"></tbody></table>`;
+        refreshChargesTable();
+    }
+    function refreshChargesTable() {
+        const tbody = document.getElementById('adminChargesTable');
+        if (!tbody) return;
+        tbody.innerHTML = extraCharges.map(ch => `
+            <tr>
+                <td>${ch.id}</td>
+                <td>${ch.name}</td>
+                <td>৳ ${ch.amount}</td>
+                <td><button class="admin-btn-secondary edit-charge" data-id="${ch.id}">Edit</button> <button class="admin-btn-secondary del-charge" data-id="${ch.id}">Delete</button></td>
+            </tr>
+        `).join('');
+    }
+    document.getElementById('adminContainer').addEventListener('click', (e) => {
+        if (e.target.id === 'addChargeBtn') {
+            showModal('Add Extra Charge', `<div><input id="chargeName" placeholder="Charge Name"><input id="chargeAmount" type="number" placeholder="Amount (৳)"><button id="saveChargeBtn" class="admin-btn">Save</button></div>`, ()=>{});
+            setTimeout(() => {
+                document.getElementById('saveChargeBtn').onclick = () => {
+                    const name = document.getElementById('chargeName').value.trim();
+                    const amount = parseFloat(document.getElementById('chargeAmount').value);
+                    if (!name || isNaN(amount)) { showToast('Enter valid name and amount'); return; }
+                    const newId = extraCharges.length ? Math.max(...extraCharges.map(c=>c.id)) + 1 : 1;
+                    extraCharges.push({ id: newId, name, amount });
+                    saveExtraCharges(); refreshChargesTable();
+                    document.getElementById('customModal').style.display='none';
+                    showToast('Extra charge added');
+                };
+            }, 50);
+        }
+        if (e.target.classList.contains('edit-charge')) {
+            const id = parseInt(e.target.dataset.id);
+            const ch = extraCharges.find(c => c.id === id);
+            showModal('Edit Extra Charge', `<div><input id="editChargeName" value="${ch.name}"><input id="editChargeAmount" value="${ch.amount}" type="number"><button id="updateChargeBtn" class="admin-btn">Update</button></div>`, ()=>{});
+            setTimeout(() => {
+                document.getElementById('updateChargeBtn').onclick = () => {
+                    ch.name = document.getElementById('editChargeName').value;
+                    ch.amount = parseFloat(document.getElementById('editChargeAmount').value);
+                    saveExtraCharges(); refreshChargesTable();
+                    document.getElementById('customModal').style.display='none';
+                    showToast('Charge updated');
+                };
+            }, 50);
+        }
+        if (e.target.classList.contains('del-charge')) {
+            const id = parseInt(e.target.dataset.id);
+            extraCharges = extraCharges.filter(c => c.id !== id);
+            saveExtraCharges(); refreshChargesTable();
+            showToast('Charge deleted');
+        }
+    });
+
+    // ========== SETTINGS (with delivery charges) ==========
+    function renderAdminSettings() {
+        const panel = document.getElementById('adminSettingsPanel');
+        panel.innerHTML = `<div>
+            <label>Site Title</label><input id="stTitle" value="${settings.siteTitle}">
+            <label>Contact Email</label><input id="stEmail" value="${settings.contactEmail}">
+            <label>WhatsApp Number</label><input id="waNumber" value="${settings.whatsappNumber || '880123456789'}">
+            <label>Delivery Charge (Inside Dhaka) ৳</label><input id="deliveryInside" type="number" value="${settings.deliveryInsideDhaka || 60}">
+            <label>Delivery Charge (Outside Dhaka) ৳</label><input id="deliveryOutside" type="number" value="${settings.deliveryOutsideDhaka || 120}">
+            <label>Admin Password (new)</label><input type="password" id="newAdminPwd" placeholder="Change password">
+            <button id="saveSettingsBtn" class="admin-btn">Save Settings</button>
+        </div>`;
+        document.getElementById('saveSettingsBtn').onclick = () => {
+            settings.siteTitle = document.getElementById('stTitle').value;
+            settings.contactEmail = document.getElementById('stEmail').value;
+            settings.whatsappNumber = document.getElementById('waNumber').value.trim();
+            settings.deliveryInsideDhaka = parseFloat(document.getElementById('deliveryInside').value) || 0;
+            settings.deliveryOutsideDhaka = parseFloat(document.getElementById('deliveryOutside').value) || 0;
+            const newPwd = document.getElementById('newAdminPwd').value;
+            if (newPwd) settings.adminPasswordHash = btoa(newPwd);
+            saveSettings();
+            document.querySelector('.logo-centered').innerText = settings.siteTitle;
+            updateWhatsAppLink();
+            showToast('Settings saved');
+        };
+    }
+
+    // ========== EVENT LISTENERS ==========
+    document.querySelectorAll('.bottom-nav-item').forEach(btn=>btn.addEventListener('click',()=>{ const page=btn.dataset.page; if(page==='home') renderHome(); else if(page==='shop') renderShop(); else if(page==='cart') renderCartPage(); document.querySelectorAll('.bottom-nav-item').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }));
+    document.getElementById('cartIconBtn').addEventListener('click',()=>document.getElementById('cartSidebar').classList.toggle('open'));
+    document.getElementById('checkoutCartBtn').addEventListener('click',()=>showCheckoutForm());
+    document.getElementById('wishlistBtn').addEventListener('click',()=>{ currentPage='wishlist'; renderWishlistPage(); document.querySelectorAll('.bottom-nav-item').forEach(b=>b.classList.remove('active')); });
+    document.getElementById('hamburgerOpenBtn').onclick=()=>document.getElementById('hamburgerSidebar').classList.add('open');
+    document.getElementById('closeHamburger').onclick=()=>document.getElementById('hamburgerSidebar').classList.remove('open');
+    document.querySelectorAll('#hamburgerSidebar li').forEach(li=>li.addEventListener('click',()=>{ showSidebarPage(li.dataset.section); document.getElementById('hamburgerSidebar').classList.remove('open'); }));
+    document.getElementById('searchIconBtn').onclick=()=>{ const ov=document.getElementById('searchOverlay'); ov.style.display=ov.style.display==='none'||!ov.style.display?'block':'none'; if(ov.style.display==='block') document.getElementById('searchInput').focus(); };
+    document.addEventListener('click',(e)=>{ const sidebar=document.getElementById('cartSidebar'); if(!sidebar.contains(e.target) && !document.getElementById('cartIconBtn').contains(e.target)) sidebar.classList.remove('open'); });
+    document.getElementById('adminOpenBtn').onclick=()=>{ document.getElementById('adminOverlay').style.display='flex'; checkAdminLogin(); };
+    document.getElementById('adminOverlay').addEventListener('click',(e)=>{ if(e.target===document.getElementById('adminOverlay')) document.getElementById('adminOverlay').style.display='none'; });
+    document.getElementById('closeDetailPageBtn').onclick=closeDetailPage;
+    document.getElementById('productDetailPage').addEventListener('click',(e)=>{ if(e.target===document.getElementById('productDetailPage')) closeDetailPage(); });
+    document.getElementById('logoHomeBtn').onclick = () => { renderHome(); };
+    loadAllData(); renderHome();
+</script>
+</body>
+</html>
